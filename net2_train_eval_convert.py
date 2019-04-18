@@ -95,8 +95,8 @@ def model_train(checkpoint_path, net1_model, net2_model, train_loader, valid_loa
             if curr_lr < hp.train2.stopping_lr:
                 logger.info("Early stopping\n\n")
                 break
-            if loss.data[0] < best_loss:
-                best_loss = loss.data[0]
+            if eval_loss.data[0] < best_loss:
+                best_loss = eval_loss.data[0]
                 best_model_wts = copy.deepcopy(net2_model.state_dict())
 
                 net2_model.load_state_dict(best_model_wts)
