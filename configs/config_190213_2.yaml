@@ -1,0 +1,94 @@
+#  This is for bigger Network1 to shine the proposed architecture
+default:
+    sr: 16000
+    frame_shift: 0.005
+    frame_length: 0.025
+    win_length: 400
+    hop_length: 80
+    n_fft: 512
+    preemphasis: 0.99
+    n_mfcc: 80
+    n_iter: 60
+    n_mels: 80
+    duration: 2
+    max_db: 35
+    min_db: -35
+    phns_len: 61
+    do_preemphasis: False
+train1:
+    # path
+    data_path: '/home/admin/Music/TIMIT/TIMIT/NIST/TRAIN/*/*/*.wav'
+    #data_path: '/home/admin/projects/pytorch_voice_conversion/data/TIMIT/train/*.wav'
+    exp_name: 'exp_190213_2'
+    # model
+    hidden_units: 512  # alias: E
+    num_banks: 8
+    num_highway_blocks: 8
+    norm_type: 'ins'  # a normalizer function. value: bn, ln, ins, or None
+    t: 1.0  # temperature
+    dropout_rate: 0.2
+    device: 1
+    kernel_size: 3
+    stride_size: 1
+    padding_size: 1
+
+    # train
+    batch_size: 32
+    lr: 0.0003
+    num_epochs: 1000
+    steps_per_epoch: 500
+    eval_interval: 1
+    num_workers: 10
+
+train2:
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p299/*.wav'
+    exp_name: 'exp_190212'
+    # TODO: fix this
+    kernel_size: 3
+    stride_size: 1
+    padding_size: 1
+    num_workers: 10
+    device: 1
+
+    # train
+    batch_size: 8
+    num_epochs: 500
+    eval_interval: 1
+train3:
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p298/*.wav'
+    exp_name: 'exp_190213'
+    device: 1
+    num_workers: 1
+    batch_size: 3
+    kernel_size: 3
+    stride_size: 1
+    padding_size: 1
+    eval_interval: 1
+
+eval1:
+    data_path: '/home/admin/Music/TIMIT/TIMIT/NIST/TEST/*/*/*.wav'
+    #data_path: '/home/admin/projects/pytorch_voice_conversion/data/TIMIT/eval/*.wav'
+    exp_name: 'exp_190206'
+    num_workers: 10
+
+eval2:
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p299/eval/*.wav'
+    exp_name: 'exp_190206'
+    num_workers: 10
+    batch_size: 3
+
+eval3:
+    exp_name: 'exp_190206'
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p298/eval/*.wav'
+    num_workers: 10
+    batch_size: 8
+
+convert:
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p298/*.wav'
+    batch_size: 10
+    device: 1
+
+quick_convert:
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p298/*.wav'
+    batch_size: 10
+    device: 1

@@ -1,0 +1,136 @@
+#  This is for bigger Network1 to shine the proposed architecture
+default:
+    sr: 16000
+    frame_shift: 0.005
+    frame_length: 0.025
+    win_length: 400
+    hop_length: 80
+    n_fft: 512
+    preemphasis: 0.99
+    n_mfcc: 80
+    n_iter: 60
+    n_mels: 80
+    duration: 2
+    max_db: 35
+    min_db: -35
+    phns_len: 61
+    do_preemphasis: True
+train1:
+    # path
+    data_path: '/home/admin/Music/TIMIT/TIMIT/NIST/TRAIN/*/*/*.wav'
+    #data_path: '/home/admin/projects/pytorch_voice_conversion/data/TIMIT/train/*.wav'
+    exp_name: 'exp_190214'
+    # model
+    hidden_units: 512  # alias: E
+    num_banks: 8
+    num_highway_blocks: 8
+    norm_type: 'ins'  # a normalizer function. value: bn, ln, ins, or None
+    t: 1.0  # temperature
+    clip_norm: 10
+    dropout_rate: 0.2
+    device: 1
+    kernel_size: 3
+    stride_size: 1
+    padding_size: 1
+    # not implemented yet
+    do_gradient_clip: False
+
+    # train
+    batch_size: 32
+    lr: 0.003
+    num_epochs: 1000
+    steps_per_epoch: 500
+    eval_interval: 1
+    num_workers: 10
+    stopping_lr: 0.0000001
+
+train2:
+    # path
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p299/*.wav'
+    exp_name: 'exp_190418'
+    # model
+    hidden_units: 1024
+    num_banks: 8
+    num_highway_blocks: 8
+    t: 1.0
+    dropout_rate: 0.2
+    n_mixtures: 5
+    kernel_size: 3
+    stride_size: 1
+    padding_size: 1
+    clip_value_max: 3.
+    clip_value_min: -3.
+    clip_norm: 15
+    mol_step: 0.003
+    do_gradient_clip: False
+
+    # train
+    batch_size: 4
+    lr: 0.003
+    num_epochs: 20000
+    eval_interval: 1
+    num_workers: 10
+    device: 1
+    stopping_lr: 0.00001
+
+train3:
+    # path
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p298/*.wav'
+    exp_name: 'exp_190214'
+
+    # model
+    hidden_units: 512
+    num_banks: 8
+    num_highway_blocks: 8
+    t: 1.0
+    dropout_rate: 0.2
+    n_mixtures: 5
+    kernel_size: 3
+    stride_size: 1
+    padding_size: 1
+    clip_value_max: 3.
+    clip_value_min: -3.
+    clip_norm: 10
+    mol_step: 0.003
+    # not implemented yet
+    do_gradient_clip: False
+
+    # train
+    batch_size: 8
+    lr: 0.003
+    num_epochs: 20000
+    eval_interval: 1
+    num_workers: 10
+    device: 1
+    stopping_lr: 0.0000001
+
+eval1:
+    data_path: '/home/admin/Music/TIMIT/TIMIT/NIST/TEST/*/*/*.wav'
+    #data_path: '/home/admin/projects/pytorch_voice_conversion/data/TIMIT/eval/*.wav'
+    exp_name: 'exp_190206'
+    num_workers: 10
+    batch_size: 3
+
+eval2:
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p299/eval/*.wav'
+    exp_name: 'exp_190206'
+    num_workers: 10
+    batch_size: 2
+
+eval3:
+    exp_name: 'exp_190206'
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p298/eval/*.wav'
+    num_workers: 10
+    batch_size: 8
+
+convert:
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p298/*.wav'
+    batch_size: 10
+    device: 1
+    emphasis_magnitude: 1.2
+
+
+quick_convert:
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p298/*.wav'
+    batch_size: 10
+    device: 1

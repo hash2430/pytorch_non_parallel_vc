@@ -1,0 +1,70 @@
+# Downgraded to pytorch 0.3.0 because there were RNN Error in pytorch highger than 0.3.1
+# https://github.com/pytorch/pytorch/issues/7961
+
+default:
+    duration: 2
+    phns_len: 61
+train1:
+    # path
+    data_path: '/home/admin/Music/TIMIT/TIMIT/NIST/TRAIN/*/*/*.wav'
+    exp_name: 'exp_190205'
+    # model
+    hidden_units: 128  # alias: E
+    num_banks: 8
+    num_highway_blocks: 4
+    norm_type: 'ins'  # a normalizer function. value: bn, ln, ins, or None
+    t: 1.0  # temperature
+    dropout_rate: 0.2
+    device: 1
+
+    # train
+    batch_size: 32
+    lr: 0.0003
+    num_epochs: 1000
+    steps_per_epoch: 500
+    eval_interval: 1
+    save_per_epoch: 50
+    num_gpu: 1
+    num_workers: 10
+
+train2:
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p299/train/*.wav'
+    exp_name: 'exp_190206'
+    # TODO: fix this
+    kernel_size: 3
+    stride_size: 1
+    padding_size: 1
+    num_workers: 10
+    device: 1
+
+    # train
+    batch_size: 8
+    num_epochs: 500
+    eval_interval: 1
+train3:
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p298/train/*.wav'
+    exp_name: 'exp_190206'
+    device: 1
+    num_workers: 10
+    batch_size: 8
+    kernel_size: 3
+    stride_size: 1
+    padding_size: 1
+    eval_interval: 1
+
+eval1:
+    data_path: '/home/admin/Music/TIMIT/TIMIT/NIST/TEST/*/*/*.wav'
+    exp_name: 'exp_190206'
+    num_workers: 10
+
+eval2:
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p299/eval/*.wav'
+    exp_name: 'exp_190206'
+    num_workers: 10
+    batch_size: 8
+
+eval3:
+    exp_name: 'exp_190206'
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p298/eval/*.wav'
+    num_workers: 10
+    batch_size: 8

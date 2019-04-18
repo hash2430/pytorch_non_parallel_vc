@@ -1,0 +1,150 @@
+---
+default:
+    sr: 16000
+    frame_shift: 0.005
+    frame_length:  0.025
+    win_length: 400
+    hop_length: 80
+    n_fft: 512
+    preemphasis: 0.99
+    n_mfcc: 40
+    n_iter: 60 # Number of inversion iterations
+    n_mels: 80
+    duration: 2
+    max_db: 35
+    min_db: -55
+
+    # model
+    hidden_units: 256  # alias: E
+    num_banks: 16
+    num_highway_blocks: 4
+    norm_type: 'ins'  # a normalizer function. value: bn, ln, ins, or None
+    t: 1.0  # temperature
+    dropout_rate: 0.2
+
+    # train
+    batch_size: 32
+
+logdir_path: './logdir'
+
+train1:
+    # path
+    data_path: './datasets/TIMIT/NIST/TRAIN/*/*/*.wav'
+
+
+    # model
+    hidden_units: 128  # alias: E
+    num_banks: 8
+    num_highway_blocks: 4
+    norm_type: 'ins'  # a normalizer function. value: bn, ln, ins, or None
+    t: 1.0  # temperature
+    dropout_rate: 0.2
+    kernel_size: 3
+    stride_size: 1
+    padding_size: 1
+
+    # train
+    batch_size: 32
+    lr: 0.0003
+    num_epochs: 1000
+    eval_interval: 10
+    steps_per_epoch: 500
+    save_per_epoch: 50
+    num_gpu: 1
+---
+train2:
+    # path
+    data_path: './datasets/avb/reading_180/*.wav'
+    # model
+    hidden_units: 512  # alias: E
+    num_banks: 8
+    num_highway_blocks: 8
+    norm_type: 'ins'  # a normalizer function. value: bn, ln, ins, or None
+    t: 1.0  # temperature
+    dropout_rate: 0.2
+    n_mixtures: 5
+
+    # train
+    batch_size: 8
+    lr: 0.0003
+    eval_interval: 10
+    lr_cyclic_margin: 0.
+    lr_cyclic_steps: 5000
+    clip_value_max: 3.
+    clip_value_min: -3.
+    clip_norm: 10
+    mol_step: 0.003
+    num_epochs: 20000
+    steps_per_epoch: 180
+    save_per_epoch: 100
+    test_per_epoch: 50
+    num_gpu: 2
+---
+train3:
+    data_path: './datasets/arctic/bdl/trainset/*.wav'
+    hidden_units: 512  # alias: E
+    num_banks: 8
+    num_highway_blocks: 8
+    norm_type: 'ins'  # a normalizer function. value: bn, ln, ins, or None
+    t: 1.0  # temperature
+    dropout_rate: 0.2
+    n_mixtures: 5
+
+    # train
+    batch_size: 16
+    lr: 0.0003
+    lr_cyclic_margin: 0.
+    lr_cyclic_steps: 5000
+    clip_value_max: 3.
+    clip_value_min: -3.
+    clip_norm: 10
+    mol_step: 0.003
+    num_epochs: 20000
+    steps_per_epoch: 100
+    save_per_epoch: 100
+    test_per_epoch: 50
+    num_gpu: 1
+
+---
+eval1:
+    # path
+    #data_path: '/data/private/vc/datasets/timit/TIMIT/TEST/*/*/*.wav'
+    data_path: './datasets/phone_recognizer/wav16/*.wav'
+    exp_name: 'debug'
+    # test
+    batch_size: 32
+---
+eval2:
+    # path
+    data_path: './datasets/avb/evalset/*.wav'
+    exp_name: 'debug'
+    # test
+    batch_size: 32
+
+---
+eval3:
+    # path
+    data_path: './datasets/arctic/bdl/trainset/arctic_a00**.wav'
+    exp_name: 'debug'
+    # test
+    batch_size: 20
+
+---
+convert:
+    # path
+    data_path: './datasets/arctic/bdl/arctic_a01**.wav'
+    exp_name: 'debug'
+    # convert
+    one_full_wav: True
+    batch_size: 3
+    emphasis_magnitude: 1.2
+
+---
+quick_convert:
+    # path
+    data_path: './datasets/arctic/bdl/arctic_a01**.wav'
+    exp_name: 'debug'
+    # convert
+    one_full_wav: True
+    batch_size: 3
+    emphasis_magnitude: 1.2
