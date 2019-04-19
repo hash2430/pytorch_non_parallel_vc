@@ -87,7 +87,7 @@ def model_train(checkpoint_path, net1_model, net2_model, train_loader, valid_loa
         if (epoch % eval_interval == 0) or (epoch == num_epochs):
             eval_loss = model_eval(net1_model, net2_model, valid_loader, criterion, device=device)
             writer.add_scalar('Net2_Eval_Loss', eval_loss, epoch)
-            #plateau_lr_scheduler.step(eval_loss)
+            plateau_lr_scheduler.step(eval_loss)
             curr_lr = optimizer.param_groups[0]['lr']
             writer.add_scalar('Learning_Rate', curr_lr, epoch)
             logger.info('Evaluation loss: {:.4f} \n'.format(eval_loss))
@@ -95,8 +95,8 @@ def model_train(checkpoint_path, net1_model, net2_model, train_loader, valid_loa
             if curr_lr < hp.train2.stopping_lr:
                 logger.info("Early stopping\n\n")
                 break
-            if eval_loss.data[0] < best_loss:
-                best_loss = eval_loss.data[0]
+            if eval_loss < best_loss:
+                best_loss = eval_loss
                 best_model_wts = copy.deepcopy(net2_model.state_dict())
 
                 net2_model.load_state_dict(best_model_wts)
