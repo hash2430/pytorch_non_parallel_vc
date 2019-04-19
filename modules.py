@@ -98,7 +98,7 @@ class CBHG(nn.Module):
     def forward(self, input):
         output = self.conv1d_banks(input) # (N, K * E / 2, T)
         output = self.maxPool1d(output) # (N, K * E / 2, t) # Maxpool on T dim
-        output = self.conv1d(output) # (N, E / 2, T)
+        output = F.relu(self.conv1d(output)) # (N, E / 2, T)
         output = self.conv1d2(output) # (N, E/2, T)
         output += input # residual connections # (N, E/2, T)
 

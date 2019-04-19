@@ -19,7 +19,7 @@ train1:
     # path
     data_path: '/home/admin/Music/TIMIT/TIMIT/NIST/TRAIN/*/*/*.wav'
     #data_path: '/home/admin/projects/pytorch_voice_conversion/data/TIMIT/train/*.wav'
-    exp_name: 'exp_190214'
+    exp_name: 'exp_190419'
     # model
     hidden_units: 512  # alias: E
     num_banks: 8
@@ -37,7 +37,7 @@ train1:
 
     # train
     batch_size: 32
-    lr: 0.003
+    lr: 0.0003
     num_epochs: 1000
     steps_per_epoch: 500
     eval_interval: 1
@@ -47,7 +47,7 @@ train1:
 train2:
     # path
     data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p299/*.wav'
-    exp_name: 'exp_190418'
+    exp_name: 'exp_190418_relu_added_to_conv_banks'
     # model
     hidden_units: 1024
     num_banks: 8
