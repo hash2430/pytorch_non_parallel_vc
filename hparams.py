@@ -53,5 +53,11 @@ class Hparam(Dotdict):
         setattr(self, 'exp_name', exp_name)
         setattr(self, 'logdir', './logdir/{}'.format(exp_name))
 
+    # TODO: Find better way to concatenate strings
+    def hparams_debug_string(self, hparam):
+        str = "=== Hyper parameters ===\n"
+        for key, value in hparam.items():
+            str+=("{}: {}\n".format(key, value))
+        return str
 hparam = Hparam()
 

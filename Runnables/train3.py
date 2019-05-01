@@ -78,6 +78,7 @@ if __name__ == '__main__':
     logger = get_logger('train3', log_dict['train3'])
     logger.info("Training of Network3 starts")
     logger.info('configuration: {}, logdir: {}'.format(config_name, log_dict['train3']))
+    logger.info(hp.hparams_debug_string(hp.train3))
     start = time.time()
     train(log_dict['train1'], log_dict['train2'], log_dict['train3'])
     end = time.time()

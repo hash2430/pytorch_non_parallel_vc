@@ -45,6 +45,7 @@ if __name__ == '__main__':
     logdir_dict = load_logdir()
     logger = get_logger('QUICK_CONVERT', logdir_dict['quick_convert'])
     logger.info('configuration: {}, logdir: {}'.format(config_name, logdir_dict['train3']))
+    logger.info(hp.hparams_debug_string(hp.quick_convert))
     start = time.time()
     convert(logdir_dict['train3'], logdir_dict['quick_convert'])
     end = time.time()

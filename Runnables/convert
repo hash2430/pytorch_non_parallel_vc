@@ -61,6 +61,7 @@ if __name__ == '__main__':
     log_dict = load_logdir()
     logger = get_logger('CONVERT', log_dict['convert'])
     logger.info('configuration: {},logdir: {}'.format(config_name, log_dict['train2']))
+    logger.info(hp.hparams_debug_string(hp.convert))
     start = time.time()
     convert(log_dict['train1'], log_dict['train2'], log_dict['convert'])
     logger.info("Done")
