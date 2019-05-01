@@ -1,4 +1,5 @@
 import torch.nn as nn
+import modules2
 import modules
 import torch.nn.functional as F
 from hparams import hparam as hp
@@ -34,12 +35,12 @@ class Net1(nn.Module):
 class Net2(nn.Module):
     def __init__(self):
         super(Net2, self).__init__()
-        self.prenet = modules.prenet(hp.default.phns_len,
+        self.prenet = modules2.prenet(hp.default.phns_len,
                                      hp.train2.hidden_units,
                                      hp.train2.hidden_units // 2,
                                      hp.train2.dropout_rate
                                      )
-        self.cbhg1 = modules.CBHG(hp.train2.hidden_units // 2,
+        self.cbhg1 = modules2.CBHG(hp.train2.hidden_units // 2,
                                   hp.train2.num_banks,
                                   hp.train2.hidden_units // 2,
                                   hp.train2.num_highway_blocks,
@@ -51,9 +52,12 @@ class Net2(nn.Module):
 
         # Originally, this layer was meant to FC to n_mel dimension for dim compression effect
         self.densenet2 = nn.Linear(hp.default.n_mels,
-                                   hp.train2.hidden_units // 2
-                                   )
-        self.cbhg2 = modules.CBHG(hp.train2.hidden_units // 2,
+                      hp.train2.hidden_units // 2
+                      )
+
+        self.batchnorm = nn.BatchNorm1d(hp.train2.hidden_units//2)
+
+        self.cbhg2 = modules2.CBHG(hp.train2.hidden_units // 2,
                                   hp.train2.num_banks,
                                   hp.train2.hidden_units // 2,
                                   hp.train2.num_highway_blocks,
@@ -75,9 +79,8 @@ class Net2(nn.Module):
         out = out.transpose(1, 0) # (N, T, E)
         pred_mel = self.densenet1(out) # (N, T, n_mel)
 
-        out = self.densenet2(pred_mel) # (N, T, E/2)
+        out = self.batchnorm((self.densenet2(pred_mel).transpose(1, 2))) # (N, T, E/2)
         # Reshape: cbhg input needs shape
-        out = out.transpose(2, 1) # (N, E/2, T)
         out = self.cbhg2(out) # (T, N, E)
         # Reshape: FC input needs shape
         out = out.transpose(1, 0) # (N, T, E)
