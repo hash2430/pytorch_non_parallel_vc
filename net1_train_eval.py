@@ -73,8 +73,8 @@ def model_train(checkpoint_path, net1_model, train_loader, valid_loader,
         end = time.time()
         diff = end - start
         logger.info('Training Time : {} s'.format(diff))
-        logger.info('Training Loss: {} '.format(loss.data[0]))
-        writer.add_scalar('Training_Loss', loss.data[0], epoch)
+        logger.info('Training Loss: {} '.format(loss.item()))
+        writer.add_scalar('Training_Loss', loss.item(), epoch)
 
         # Validation
         if (epoch % eval_interval == 0) or (epoch == num_epochs):
@@ -135,7 +135,7 @@ def model_eval(net1_model, valid_loader, criterion, device):
         logits = logits.view(-1, Net1TimitData.phone_vocab_size)
         y_phns = y_phns.view(-1).type(dtype)
         loss = criterion(mfccs, logits, y_phns)
-        eval_loss += loss.data[0]
+        eval_loss += loss.item()
 
         # Calculate accuracy for logging purpose
         is_target = torch.sign(torch.abs(torch.sum(mfccs, dim=-1))).view(-1).data.byte()
@@ -145,8 +145,8 @@ def model_eval(net1_model, valid_loader, criterion, device):
 
 
         _acc = torch.mul(torch.eq(pred_phns, y_phns_tensor), is_target)
-        _acc = _acc.sum()
-        acc += _acc/num_targets
+        _acc = _acc.sum().item()
+        acc += _acc/num_targets.item()
 
     avg_loss = eval_loss / len(valid_loader)
     acc = acc / len(valid_loader)

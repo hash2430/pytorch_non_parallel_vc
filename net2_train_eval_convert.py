@@ -81,8 +81,8 @@ def model_train(checkpoint_path, net1_model, net2_model, train_loader, valid_loa
         end = time.time()
         diff = end - start
         logger.info('Training Time : {} s'.format(diff))
-        logger.info('Training Loss: {}'.format(loss.data[0]))
-        writer.add_scalar('Training_Loss', loss.data[0], epoch)
+        logger.info('Training Loss: {}'.format(loss.item()))
+        writer.add_scalar('Training_Loss', loss.item(), epoch)
         # validation
         if (epoch % eval_interval == 0) or (epoch == num_epochs):
             eval_loss = model_eval(net1_model, net2_model, valid_loader, criterion, device=device)
@@ -142,7 +142,7 @@ def model_eval(net1_model, net2_model, valid_loader, criterion, device=0):
         pred_spec, pred_mel = net2_model(ppgs)
 
         loss = criterion(pred_spec, pred_mel, y_spec, y_mel)
-        eval_loss += loss.data[0]
+        eval_loss += loss.item()
 
     avg_loss = eval_loss / len(valid_loader)
     return avg_loss
