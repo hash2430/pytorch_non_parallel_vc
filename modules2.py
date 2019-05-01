@@ -76,11 +76,13 @@ class highwaynet(nn.Module):
             nn.Linear(in_features=in_features, out_features=num_units, bias=True),
             nn.Sigmoid()
         )
+        self.batch_norm = nn.BatchNorm1d(num_units)
     def forward(self, x):
         h = self.H(x)
         t = self.T(x)
         t_ = 1. - t
         output = h * t + x * t_
+        output = self.batch_norm(output.transpose(1, 2)).transpose(1, 2)
         return output
 
 class CBHG(nn.Module):
