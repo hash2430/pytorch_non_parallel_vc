@@ -49,7 +49,7 @@ def convert(logdir_train1, logdir_train2, logdir_convert):
     logger.debug('batch_size: {}'.format(hp.convert.batch_size))
     logger.debug('shuffle=False')
     logger.debug('drop_last=False')
-    net2_test(net1_model, net2_model, test_loader, logdir_convert)
+    net2_test(net1_model, net2_model, test_loader, logdir_train2, logdir_convert)
     net1_num_params = count_parameters(net1_model)
     net2_num_params = count_parameters(net2_model)
     logger.debug('Network 1 number of params: {}'.format(net1_num_params))

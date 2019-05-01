@@ -9,7 +9,7 @@ from torch.autograd import Variable
 from torch.optim import lr_scheduler
 
 from audio_utils import *
-from utils import Profiler
+from utils import Profiler, prepare_spec_image
 
 '''
 TODO: decide whether to retrieve net1_model from outside of the net2_model or retrieve net1 from the submodule of net2
@@ -147,7 +147,8 @@ def model_eval(net1_model, net2_model, valid_loader, criterion, device=0):
     avg_loss = eval_loss / len(valid_loader)
     return avg_loss
 
-def convert(net1_model, net2_model, conversion_source_loader, logdir):
+def convert(net1_model, net2_model, conversion_source_loader, logdir_train2, logdir_convert):
+    writer = SummaryWriter(logdir_train2)
     logger = logging.getLogger('CONVERT')
     # Dataloader => source mfcc
     net1_profiler = Profiler('Network 1')
@@ -170,15 +171,26 @@ def convert(net1_model, net2_model, conversion_source_loader, logdir):
 
         spec_postprocessing_profiler.start()
         pred_spec = pred_spec.data.cpu().numpy()
+        pred_spec_img = prepare_spec_image(pred_spec[0])
+        writer.add_image('0_Pred_spec', pred_spec_img)
         pred_mel = pred_mel.data.cpu().numpy()
-        # Denormalization
+        pred_mel_img = prepare_spec_image(pred_mel[0])
+        writer.add_image('0_Pred_mel', pred_mel_img)
+
+        # 1. Denormalization
         pred_spec = denormalize_db(pred_spec, hp.default.max_db, hp.default.min_db)
+        pred_spec_img = prepare_spec_image(pred_spec[0])
+        writer.add_image('1_Denormalization', pred_spec_img)
 
-        # Db to amp
+        # 2. Db to amp
         pred_spec = db2amp(pred_spec)
+        pred_spec_img = prepare_spec_image(pred_spec[0])
+        writer.add_image('2_Db_to_amp', pred_spec_img)
 
-        # Emphasize the magnitude
+        # 3. Emphasize the magnitude
         pred_spec = np.power(pred_spec, hp.convert.emphasis_magnitude)
+        pred_spec_img = prepare_spec_image(pred_spec[0])
+        writer.add_image('3_Emphasize_magnitude', pred_spec_img)
         spec_postprocessing_profiler.end()
 
         vocoder_profiler.start()
@@ -189,10 +201,14 @@ def convert(net1_model, net2_model, conversion_source_loader, logdir):
                              hp.default.win_length,
                              hp.default.hop_length,
                              hp.default.n_iter)
+            # Save the result
+            idx = pred_spec.shape[0] * (i) + j
             # TODO: Apply inverse pre-emphasis
-            #audio = inv_preemphasis(audio, coeff=hp.default.preemphasis)
+            writer.add_audio('Predicted_audio_Before_inv_preemphasis{}'.format(idx), audio)
+            audio = inv_preemphasis(audio, coeff=hp.default.preemphasis)
+            writer.add_audio('Predicted_audio_After_inv_preemphasis{}'.format(idx), audio)
 
-            path = '{}/m2f_{:03d}.wav'.format(logdir, pred_spec.shape[0]*(i)+j)
+            path = '{}/m2f_{:03d}.wav'.format(logdir_convert, idx)
             #soundfile.write(path, wav, hp.default.sr, format='wav')
             librosa.output.write_wav(path, audio, sr=hp.default.sr)
         vocoder_profiler.end()
@@ -201,4 +217,5 @@ def convert(net1_model, net2_model, conversion_source_loader, logdir):
     logger.debug('Net2: {} s'.format(net2_profiler.get_time()))
     logger.debug('Spectrogram postprocessing: {} s'.format(spec_postprocessing_profiler.get_time()))
     logger.debug('Vocoder: {} s'.format(vocoder_profiler.get_time()))
+    writer.close()
     return

@@ -13,6 +13,7 @@ from random import shuffle
 import numpy as np
 import torch
 import yaml
+from matplotlib import cm
 
 from hparams import hparam as hp
 
@@ -42,6 +43,12 @@ def normalize_0_1(values, max, min):
 def denormalize_0_1(normalized, max, min):
     values =  np.clip(normalized, 0, 1) * (max - min) + min
     return values
+
+def prepare_spec_image(spectrogram):
+    # [0, 1]
+    spectrogram = (spectrogram - np.min(spectrogram)) / (np.max(spectrogram) - np.min(spectrogram))
+    spectrogram = np.flip(spectrogram, axis=1)  # flip against freq axis
+    return np.uint8(cm.magma(spectrogram.T) * 255)
 
 
 # def plot_confusion_matrix(correct_labels, predict_labels, labels, tensor_name='confusion_matrix', normalize=False):
