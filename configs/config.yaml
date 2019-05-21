@@ -10,7 +10,7 @@ default:
     n_mfcc: 80
     n_iter: 60
     n_mels: 80
-    duration: 2
+    duration: 5
     max_db: 35
     min_db: -35
     phns_len: 61
@@ -19,7 +19,7 @@ train1:
     # path
     data_path: '/home/admin/Music/TIMIT/TIMIT/NIST/TRAIN/*/*/*.wav'
     #data_path: '/home/admin/projects/pytorch_voice_conversion/data/TIMIT/train/*.wav'
-    exp_name: 'exp_190419'
+    exp_name: 'exp_190503'
     # model
     hidden_units: 512  # alias: E
     num_banks: 8
@@ -47,13 +47,13 @@ train1:
 train2:
     # path
     data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p299/*.wav'
-    exp_name: 'exp_190418_relu_added_to_conv_banks'
+    exp_name: 'exp_190503_from_exp190503_train1_using_modules2_both'
     # model
     hidden_units: 1024
     num_banks: 8
     num_highway_blocks: 8
     t: 1.0
-    dropout_rate: 0.2
+    dropout_rate: 0.7
     n_mixtures: 5
     kernel_size: 3
     stride_size: 1
@@ -66,12 +66,12 @@ train2:
 
     # train
     batch_size: 4
-    lr: 0.003
+    lr: 0.0003
     num_epochs: 20000
     eval_interval: 1
     num_workers: 10
     device: 1
-    stopping_lr: 0.00001
+    stopping_lr: 0.0000001
 
 train3:
     # path
@@ -125,12 +125,12 @@ eval3:
 
 convert:
     data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p298/*.wav'
-    batch_size: 10
+    batch_size: 1
     device: 1
     emphasis_magnitude: 1.2
 
 
 quick_convert:
     data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p298/*.wav'
-    batch_size: 10
+    batch_size: 2
     device: 1

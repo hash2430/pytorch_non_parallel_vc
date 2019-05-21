@@ -82,7 +82,8 @@ class highwaynet(nn.Module):
         t = self.T(x)
         t_ = 1. - t
         output = h * t + x * t_
-        output = self.batch_norm(output.transpose(1, 2)).transpose(1, 2)
+        # Highway network without batch normalization gives better performance heuristically
+        #output = self.batch_norm(output.transpose(1, 2)).transpose(1, 2)
         return output
 
 class CBHG(nn.Module):

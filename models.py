@@ -1,9 +1,7 @@
 import torch.nn as nn
-import modules2
-import modules
+import modules2 as modules
 import torch.nn.functional as F
 from hparams import hparam as hp
-import torch
 
 class Net1(nn.Module):
     def __init__(self, phns_len):
@@ -35,12 +33,12 @@ class Net1(nn.Module):
 class Net2(nn.Module):
     def __init__(self):
         super(Net2, self).__init__()
-        self.prenet = modules2.prenet(hp.default.phns_len,
+        self.prenet = modules.prenet(hp.default.phns_len,
                                      hp.train2.hidden_units,
                                      hp.train2.hidden_units // 2,
                                      hp.train2.dropout_rate
                                      )
-        self.cbhg1 = modules2.CBHG(hp.train2.hidden_units // 2,
+        self.cbhg1 = modules.CBHG(hp.train2.hidden_units // 2,
                                   hp.train2.num_banks,
                                   hp.train2.hidden_units // 2,
                                   hp.train2.num_highway_blocks,
@@ -57,7 +55,7 @@ class Net2(nn.Module):
 
         self.batchnorm = nn.BatchNorm1d(hp.train2.hidden_units//2)
 
-        self.cbhg2 = modules2.CBHG(hp.train2.hidden_units // 2,
+        self.cbhg2 = modules.CBHG(hp.train2.hidden_units // 2,
                                   hp.train2.num_banks,
                                   hp.train2.hidden_units // 2,
                                   hp.train2.num_highway_blocks,
