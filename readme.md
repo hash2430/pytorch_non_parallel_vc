@@ -71,7 +71,5 @@ Branch description: This branch is for pytorch 1.0.1
 3. Checkpoint for network 3 with male (p298 from VCTK) as target: https://www.dropbox.com/sh/4sfqvemx14uhpi2/AACrLP67QszdcFE4WoYtTLSma?dl=1
 # 7. Audio samples
 convert and quick_convert show approximately the same results
-1. male (p298) target using convert: https://www.dropbox.com/sh/e2q7ppqam4y0fj4/AAADCHWldGBjCUk9yuVGuzCza?dl=1
-2. male (p298) target using quick convert: https://www.dropbox.com/sh/gzp8cob5hik02jb/AAAKTnnCh5nkkzTIYnUNoFhLa?dl=1
-2. p298 target using quick_convert
-1. p298 target
+1. male (p298) target using convert: https://soundcloud.com/x7uo0xxkerik/sets/male-target-baseline
+2. male (p298) target using quick convert: https://soundcloud.com/x7uo0xxkerik/sets/male-target-proposed
