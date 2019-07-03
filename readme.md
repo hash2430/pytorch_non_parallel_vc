@@ -65,4 +65,7 @@ Branch description: This branch is for pytorch 1.0.1
   [exp_name]/train3/convert_[timestamp]
   ```
   if you generated them by running quick_convert.py
-
+# 6. Pretrained models
+1. Checkpoint for network 1: https://www.dropbox.com/s/f95uccte82jl0uu/checkpoint.tar?dl=1
+2. Checkpoint for network 2 with p298 from VCTK as target: https://www.dropbox.com/s/w0rttao5yqx7op5/checkpoint.tar?dl=1
+3. Checkpoint for network 3 with p298 from VCTK as target: https://www.dropbox.com/sh/4sfqvemx14uhpi2/AACrLP67QszdcFE4WoYtTLSma?dl=1
