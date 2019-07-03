@@ -8,10 +8,12 @@ Branch description: This branch is for pytorch 1.0.1
 # 2. Directory 
 ## 2.1 Runnable
 * Runnable: package contains python modules that you actually run.
-* logdir: According to your specification in cofig.yaml, 'exp_name' option, matching directory is created. For example, if you specify train2.exp_name as 'female_to_male', then 'female_to_male/train2' directory will be created under 'logdir' directory. If you specify the same name for train3.exp_name, 'female_to_male/train3 directory will also be created. 
+## 2.2 logdir
+* According to your specification in cofig.yaml, directory with name 'exp_name' that you specified is created under logdir. 
+* For example, if you specify train2.exp_name as 'female_to_male', then 'female_to_male/train2' directory will be created under 'logdir' directory. If you specify the same name for train3.exp_name, 'female_to_male/train3 directory will also be created. 
   * Files that are saved in specified logdir: tensorboard event files, pytorch checkpoint, log file
   * converted wav: If you convert or quick_convert using checkpoint of certain directory, convert_[time_stamp] directory is created under that logdir. For example, if you run convert using checkpoint at 'logdir/female_to_male/train2', then 'convert_[time_stamp]' directory is created under train2. Log file for conversion and generated wav files are saved there.
-## 2.2 configs
+## 2.3 configs
 * This is where your yaml file is stored. you need to specify the name of configuration yaml at each runnables.
 # 3. How to train
 * train1
