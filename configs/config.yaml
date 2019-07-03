@@ -46,8 +46,8 @@ train1:
 
 train2:
     # path
-    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p299/*.wav'
-    exp_name: 'exp_190503_from_exp190503_train1_using_modules2_both'
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p299'
+    exp_name: 'exp_to_p298'
     # model
     hidden_units: 1024
     num_banks: 8
@@ -70,13 +70,15 @@ train2:
     num_epochs: 20000
     eval_interval: 1
     num_workers: 10
-    device: 1
+    device: 2
     stopping_lr: 0.0000001
 
 train3:
     # path
-    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p298/*.wav'
-    exp_name: 'exp_190214'
+    #data_path is refered only for multispeaker
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16_multi-speaker105'
+    exp_name: 'exp_p254_to_p298'
+    multi_speaker: True
 
     # model
     hidden_units: 512
@@ -101,7 +103,7 @@ train3:
     num_epochs: 20000
     eval_interval: 1
     num_workers: 10
-    device: 1
+    device: 3
     stopping_lr: 0.0000001
 
 eval1:
@@ -124,13 +126,13 @@ eval3:
     batch_size: 8
 
 convert:
-    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p298/*.wav'
-    batch_size: 1
-    device: 1
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p254'
+    batch_size: 10
+    device: 4
     emphasis_magnitude: 1.2
 
 
 quick_convert:
-    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p298/*.wav'
-    batch_size: 2
-    device: 1
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p254'
+    batch_size: 10
+    device: 2

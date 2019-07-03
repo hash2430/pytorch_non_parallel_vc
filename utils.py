@@ -5,6 +5,7 @@ import glob
 import logging
 import logging.config
 import os
+import re
 import time
 # import tfplot
 from datetime import datetime
@@ -206,6 +207,12 @@ def load_train_eval_lists(logdir):
          eval_list.append(line.rstrip())
 
     return train_list, eval_list
+
+def change_speaker(list, speaker):
+    for i in range(0, len(list)):
+        line = list[i]
+        list[i] = re.sub(r'p[0-9]{3}', speaker, line)
+    return list
 
 class Profiler():
     def __init__(self, name):

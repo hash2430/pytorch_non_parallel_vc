@@ -104,11 +104,11 @@ class Net3(nn.Module):
                                   hp.train3.stride_size,
                                   hp.train3.padding_size
                                   )
-        self.densenet1 = nn.Linear(hp.train2.hidden_units,
+        self.densenet1 = nn.Linear(hp.train3.hidden_units,
                                    hp.default.n_mels)
 
-        self.densenet2 = nn.Linear(hp.default.n_mels, hp.train2.hidden_units // 2)
-
+        self.densenet2 = nn.Linear(hp.default.n_mels, hp.train3.hidden_units // 2)
+        self.batchnorm = nn.BatchNorm1d(hp.train3.hidden_units // 2)
         self.cbhg2 = modules.CBHG(hp.train3.hidden_units // 2,
                                   hp.train3.num_banks,
                                   hp.train3.hidden_units // 2,
@@ -128,13 +128,11 @@ class Net3(nn.Module):
         out = out.transpose(2, 1)
         out = self.cbhg1(out)
         out = out.transpose(1, 0)
-        pred_mel = self.densenet1(out) # (N, T, E/2)
+        pred_mel = self.densenet1(out) # (N, T, n_mels)
 
-        out = self.densenet2(pred_mel)
-        # Reshape: cbhg input needs shape (N, E/2, T)
-        out = out.transpose(2, 1)
+        out = self.batchnorm((self.densenet2(pred_mel).transpose(1, 2)))
         out = self.cbhg2(out) # (T, N, E)
         # Reshape: FC input needs shape (N, T, E)
         out = out.transpose(1, 0)
-        pred_spec = self.densenet3(out) # (N, T, n_bins x n_mixtures x 3)
+        pred_spec = self.densenet3(out) # (N, T, n_fft//2 + 1)
         return pred_spec, pred_mel

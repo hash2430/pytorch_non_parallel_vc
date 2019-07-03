@@ -1,6 +1,8 @@
 from torch.utils.data import Dataset
 from feature_extraction import get_mfccs_and_phones, get_mfccs_and_spectrogram
 import glob
+import os
+import random
 
 # MFCC and phone needed for train1
 class Net1TimitData(Dataset):
@@ -49,9 +51,43 @@ class Net2Data(Dataset):
     def __len__(self):
         return self.size
 
+class Net2DataDir(Dataset):
+    def __init__(self, dir):
+        self.dir = dir
+        self.wav_file_list = glob.glob(os.path.join(dir, '*.wav'))
+        self.wav_file_list.sort()
+        self.size = len(self.wav_file_list)
+
+    def __getitem__(self, index):
+        wav_file_name = self.wav_file_list[index]
+        mfccs, y_spec, y_mel = get_mfccs_and_spectrogram(wav_file_name, trim=True, random_crop=False)
+        item = {'mfccs': mfccs, 'y_spec': y_spec, 'y_mel': y_mel}
+        return item
+
+    def __len__(self):
+        return self.size
+
 class Net3Data(Dataset):
     def __init__(self, list):
         self.wav_file_list = list
+        self.size = len(self.wav_file_list)
+
+    def __getitem__(self, index):
+        wav_file_name = self.wav_file_list[index]
+        mfccs, y_spec, y_mel = get_mfccs_and_spectrogram(wav_file_name, trim=True, random_crop=False)
+        item = {'mfccs': mfccs, 'y_spec': y_spec, 'y_mel': y_mel}
+        return item
+
+    def __len__(self):
+        return self.size
+
+class Net3DataDir(Dataset):
+    def __init__(self, dir, multispeaker=False, k=300):
+        self.dir = dir
+        self.wav_file_list = glob.glob(os.path.join(dir, '*.wav'))
+        self.wav_file_list.sort()
+        if multispeaker:
+            self.wav_file_list = random.sample(self.wav_file_list, k)
         self.size = len(self.wav_file_list)
 
     def __getitem__(self, index):

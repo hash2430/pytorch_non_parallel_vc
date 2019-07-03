@@ -205,7 +205,8 @@ def convert(net1_model, net2_model, conversion_source_loader, logdir_train2, log
             idx = pred_spec.shape[0] * (i) + j
             # TODO: Apply inverse pre-emphasis
             writer.add_audio('Predicted_audio_Before_inv_preemphasis{}'.format(idx), audio)
-            #audio = inv_preemphasis(audio, coeff=hp.default.preemphasis)
+            audio = inv_preemphasis(audio, coeff=hp.default.preemphasis)
+            audio = audio.astype('float32')
             writer.add_audio('Predicted_audio_After_inv_preemphasis{}'.format(idx), audio)
 
             path = '{}/m2f_{:03d}.wav'.format(logdir_convert, idx)

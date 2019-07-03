@@ -4,7 +4,7 @@ import torch
 print(torch.__version__)
 import torch.nn as nn
 from net2_train_eval_convert import model_train as net2_train
-from dataset import Net2Data
+from dataset import Net2DataDir
 from torch.utils.data import DataLoader
 from utils import load_logdir, get_logger, generate_data_list, load_train_eval_lists
 import time
@@ -48,18 +48,18 @@ def train(logdir_train1, logdir_train2):
     net2_model.train() # Set to train mode
 
     # Create train/valid loader
-    training_set = Net2Data(train_list)
+    training_set = Net2DataDir(os.path.join(data_dir,'train'))
     training_loader = DataLoader(training_set, batch_size=hp.train2.batch_size,
-                                 shuffle=False, drop_last=True, num_workers=hp.train2.num_workers)
+                                 shuffle=True, drop_last=True, num_workers=hp.train2.num_workers)
     logger.debug("Training loader created. Size: {} samples".format(training_set.size))
-    validation_set = Net2Data(eval_list)
+    validation_set = Net2DataDir(os.path.join(data_dir, 'eval'))
     # If batch_size is inconsistent at the last batch, audio_utils.net2_out_to_pdf fails
     '''
     TODO: not sure if validation_loader requires separate batch size as 'eval2.batch_size'
     maybe implement later
     '''
     validation_loader = DataLoader(validation_set, batch_size=hp.train2.batch_size,
-                                   shuffle=False, drop_last=True, num_workers=hp.eval2.num_workers)
+                                   shuffle=True, drop_last=True, num_workers=hp.eval2.num_workers)
     logger.debug("Validation loader created. Size: {} samples".format(validation_set.size))
     # Create criterion
     criterion = MyMSELoss()
@@ -79,6 +79,8 @@ if __name__ == '__main__':
     logger = get_logger('train2', log_dict['train2'])
     logger.info("Training of Network2 starts")
     logger.info('configuration: {}, logdir: {}'.format(config_name, log_dict['train2']))
+    logger.info(hp.hparams_debug_string(hp.default))
+    logger.info(hp.hparams_debug_string(hp.train1))
     logger.info(hp.hparams_debug_string(hp.train2))
     start = time.time()
     train(log_dict['train1'], log_dict['train2'])

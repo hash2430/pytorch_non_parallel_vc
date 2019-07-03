@@ -4,9 +4,9 @@ import torch
 import torch.nn as nn
 import os
 from net3_train_eval_convert import model_train as net3_train
-from dataset import Net3Data
+from dataset import Net3Data, Net3DataDir
 from torch.utils.data import DataLoader
-from utils import load_logdir, get_logger, load_train_eval_lists, generate_data_list
+from utils import load_logdir, get_logger, load_train_eval_lists, generate_data_list, change_speaker
 import time
 from mixture_loss import MyMSELoss
 
@@ -38,26 +38,30 @@ def train(logdir_train1, logdir_train2, logdir_train3):
     epoch = 0
     loss = 100.0
     lr = hp.train3.lr
+    data_dir = hp.train3.data_path
     if checkpoint3:
-        train_list, eval_list = load_train_eval_lists(logdir_train3)
         logger.info("Reuse existing train_list, eval_list from {}".format(logdir_train3))
         net3_model.load_state_dict(checkpoint3['model_state_dict'])
         optimizer.load_state_dict(checkpoint3['optimizer_state_dict'])
         lr = optimizer.param_groups[0]['lr']
         epoch = checkpoint3['epoch']
         loss = checkpoint3['loss']
+
     else:
-        data_dir = hp.train3.data_path
-        train_list, eval_list, _ = generate_data_list(logdir_train3, data_dir, 0.8, 0.1, 0.1)
         logger.info("Generate new train_list, eval_list, test_list.")
     net3_model.train() # Set to train mode
 
     # Create train/valid loader
-    training_set = Net3Data(train_list)
+    if hp.train3.multi_speaker:
+        training_set = Net3DataDir(os.path.join(data_dir, 'train','*'), hp.train3.multi_speaker, k=300)
+        validation_set = Net3DataDir(os.path.join(data_dir,'eval'), hp.train3.multi_speaker, k=40)
+    else:
+        training_set = Net3DataDir(os.path.join(data_dir, 'train'))
+        validation_set = Net3DataDir(os.path.join(data_dir, 'eval'))
     training_loader = DataLoader(training_set, batch_size=hp.train3.batch_size,
                                  shuffle=True, drop_last=True, num_workers=hp.train3.num_workers)
     logger.debug("Training loader created. Size: {} samples".format(training_set.size))
-    validation_set = Net3Data(eval_list)
+
     validation_loader = DataLoader(validation_set, batch_size=hp.train3.batch_size,
                                    shuffle=True, drop_last=True, num_workers=hp.eval3.num_workers)
     logger.debug("Validation loader created. Size: {}".format(validation_set.size))
@@ -72,12 +76,15 @@ def train(logdir_train1, logdir_train2, logdir_train3):
                             loss=loss)
 
 if __name__ == '__main__':
-    config_name = 'config_190213'
+    config_name = 'config'
     hp.set_hparam_yaml(config_name)
     log_dict = load_logdir()
     logger = get_logger('train3', log_dict['train3'])
     logger.info("Training of Network3 starts")
     logger.info('configuration: {}, logdir: {}'.format(config_name, log_dict['train3']))
+    logger.info(hp.hparams_debug_string(hp.default))
+    logger.info(hp.hparams_debug_string(hp.train1))
+    logger.info(hp.hparams_debug_string(hp.train2))
     logger.info(hp.hparams_debug_string(hp.train3))
     start = time.time()
     train(log_dict['train1'], log_dict['train2'], log_dict['train3'])

@@ -8,6 +8,7 @@ from torch.optim import lr_scheduler
 logger = logging.getLogger('train3')
 from audio_utils import *
 from tensorboardX import SummaryWriter
+from utils import Profiler, prepare_spec_image
 
 # train_eval corresponds to ModelDesc._build_graph() of tensorpack
 def model_train(checkpoint_path, net1_model, net2_model, net3_model,
@@ -73,8 +74,8 @@ def model_train(checkpoint_path, net1_model, net2_model, net3_model,
         end = time.time()
         diff = end - start
         logger.info('Training Time : {} s'.format(diff))
-        logger.info('Training Loss: {}'.format(loss.data[0]))
-        writer.add_scalar('Training_Loss', loss.data[0], epoch)
+        logger.info('Training Loss: {}'.format(loss.item()))
+        writer.add_scalar('Training_Loss', loss.item(), epoch)
         # validation
         if (epoch % eval_interval == 0) or (epoch == num_epochs):
             eval_loss = model_eval(net1_model, net2_model, net3_model, valid_loader, criterion, device)
@@ -129,19 +130,27 @@ def model_eval(net1_model, net2_model, net3_model, valid_loader, criterion, devi
         pred_spec, pred_mel = net3_model(mfccs)
 
         loss = criterion(pred_spec, pred_mel, y_spec, y_mel)
-        eval_loss += loss.data[0]
+        eval_loss += loss.item()
 
     avg_loss = eval_loss / len(valid_loader)
     return avg_loss
 
 def quick_convert(net3_model, conversion_source_loader, logdir):
+    writer = SummaryWriter(logdir)
+    logger = logging.getLogger('QUICK_CONVERT')
+    net3_profiler = Profiler('Network 3')
+    spec_postprocessing_profiler = Profiler('Spectrogram postprocessing')
+    vocoder_profiler = Profiler('Vocoder')
     # Dataloader => source mfcc
     for i, data in enumerate(conversion_source_loader):
         net3_model.eval()
         mfccs = data['mfccs']
         mfccs = Variable(mfccs).type(torch.FloatTensor)
+        net3_profiler.start()
         pred_spec, pred_mel = net3_model(mfccs)
+        net3_profiler.end()
 
+        spec_postprocessing_profiler.start()
         pred_spec = pred_spec.data.cpu().numpy()
         # Denormalization
         pred_spec = denormalize_db(pred_spec, hp.default.max_db, hp.default.min_db)
@@ -151,7 +160,9 @@ def quick_convert(net3_model, conversion_source_loader, logdir):
 
         # Emphasize the magnitude
         pred_spec = np.power(pred_spec, hp.convert.emphasis_magnitude)
+        spec_postprocessing_profiler.end()
 
+        vocoder_profiler.start()
         for j in range(pred_spec.shape[0]):
             # Spectrogram to waveform
             audio = spec2wav(pred_spec[j].T,
@@ -160,11 +171,15 @@ def quick_convert(net3_model, conversion_source_loader, logdir):
                              hp.default.hop_length,
                              hp.default.n_iter)
             # TODO: Apply inverse pre-emphasis
-            # audio = inv_preemphasis(audio, coeff=hp.default.preemphasis)
+            audio = inv_preemphasis(audio, coeff=hp.default.preemphasis)
+            audio = audio.astype('float32')
 
             path = '{}/m2f_{:03d}.wav'.format(logdir, pred_spec.shape[0] * (i) + j)
             # soundfile.write(path, wav, hp.default.sr, format='wav')
             librosa.output.write_wav(path, audio, sr=hp.default.sr)
+        vocoder_profiler.end()
+
+    logger.debug('Net3: {} s'.format(net3_profiler.get_time()))
     return
 
 

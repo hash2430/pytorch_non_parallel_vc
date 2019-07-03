@@ -1,15 +1,15 @@
 import os
+import re
 import time
 
 import torch
 from torch.utils.data import DataLoader
 
-from dataset import Net2Data
+from dataset import Net2DataDir
 from hparams import hparam as hp
 from models import Net1, Net2
 from net2_train_eval_convert import convert as net2_test
 from utils import load_logdir, get_logger, count_parameters
-import logging
 
 '''
 Call net2_train_eval_convert.convert()
@@ -30,20 +30,8 @@ def convert(logdir_train1, logdir_train2, logdir_convert):
         net2_model.load_state_dict(checkpoint2['model_state_dict'])
 
     # Create test loader
-    test_list = []
-    test_list_file = '{}/test_list.txt'.format(logdir_train2)
-    data_path = hp.convert.data_path
-    source_dir = os.path.dirname(data_path)
-    source_speaker = os.path.basename(source_dir)
-
-    with open(test_list_file, 'r') as f:
-        for line in f:
-            file_name = os.path.basename(line.rstrip())
-            target_speaker = file_name.split('_')[0]
-            file_name = file_name.replace(target_speaker, source_speaker)
-            source_file = os.path.join(source_dir, file_name)
-            test_list.append(source_file)
-    test_set = Net2Data(test_list)
+    test_set_path = os.path.join(hp.convert.data_path, 'test')
+    test_set = Net2DataDir(test_set_path)
     test_loader = DataLoader(test_set, batch_size=hp.convert.batch_size, shuffle=False, drop_last=False)
     logger.debug("Number of files to convert: {} samples".format(test_set.size))
     logger.debug('batch_size: {}'.format(hp.convert.batch_size))
@@ -61,6 +49,9 @@ if __name__ == '__main__':
     log_dict = load_logdir()
     logger = get_logger('CONVERT', log_dict['convert'])
     logger.info('configuration: {},logdir: {}'.format(config_name, log_dict['train2']))
+    logger.info(hp.hparams_debug_string(hp.default))
+    logger.info(hp.hparams_debug_string(hp.train1))
+    logger.info(hp.hparams_debug_string(hp.train2))
     logger.info(hp.hparams_debug_string(hp.convert))
     start = time.time()
     convert(log_dict['train1'], log_dict['train2'], log_dict['convert'])
