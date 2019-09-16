@@ -73,3 +73,6 @@ Branch description: This branch is for pytorch 1.0.1
 convert and quick_convert show approximately the same results
 1. male (p298) target using convert: https://soundcloud.com/x7uo0xxkerik/sets/male-target-baseline
 2. male (p298) target using quick convert: https://soundcloud.com/x7uo0xxkerik/sets/male-target-proposed
+
+# 8. Reference
+https://github.com/andabi/deep-voice-conversion
