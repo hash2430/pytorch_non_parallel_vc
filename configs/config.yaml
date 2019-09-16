@@ -47,9 +47,9 @@ train1:
 train2:
     # path
     data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p299'
-    exp_name: 'exp_to_p298'
+    exp_name: 'exp_to_p299_small_t2_256_8_8'
     # model
-    hidden_units: 1024
+    hidden_units: 256
     num_banks: 8
     num_highway_blocks: 8
     t: 1.0
@@ -77,7 +77,7 @@ train3:
     # path
     #data_path is refered only for multispeaker
     data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16_multi-speaker105'
-    exp_name: 'exp_p254_to_p298'
+    exp_name: 'exp_to_p299_small_t2_256_8_8'
     multi_speaker: True
 
     # model
@@ -126,13 +126,13 @@ eval3:
     batch_size: 8
 
 convert:
-    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p254'
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p229'
     batch_size: 10
     device: 4
     emphasis_magnitude: 1.2
 
 
 quick_convert:
-    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p254'
+    data_path: '/home/admin/Music/VCTK/VCTK-Corpus/wav16/p229'
     batch_size: 10
     device: 2
